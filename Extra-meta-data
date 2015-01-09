@@ -1,0 +1,63 @@
+
+<?php
+/*
+Plugin Name: Scott User Meta
+Plugin URI: http://shawktech.com
+Description: Allows users to configure some random extra meta value.
+Author: Scott Smith
+Version: 0.02
+Author URI: http://Shawktech.com/
+ 
+Use of the frontend as get_the_author_meta('something') or the_author_meta('something')
+*/
+ 
+class shw_user_meta {
+ 
+ function shw_user_meta() {
+ if ( is_admin() )
+ {
+ add_action('show_user_profile', array(&$this,'action_show_user_profile'));
+ add_action('edit_user_profile', array(&$this,'action_show_user_profile'));
+ add_action('personal_options_update', array(&$this,'action_process_option_update'));
+ add_action('edit_user_profile_update', array(&$this,'action_process_option_update'));
+ }
+ 
+ }
+ 
+ function action_show_user_profile($user)
+ {
+ ?>
+ <h3><?php _e('EXTRA PROFILE INFORMATION') ?></h3>
+ 
+ <table>
+ <tr>
+ <th><label for="member_id"><?php _e('Member ID'); ?></label></th>
+ <td><input type="text" name="member_id" id="Memmber ID" value="<?php echo esc_attr(get_the_author_meta('member_id', $user->ID) ); ?>" /></td>
+ <th><label for="us_states"><?php _e('US States you Service'); ?></label></th>
+ <td><input type="multi" name="US_States_Serviced" id="US States you Service" value="<?php echo esc_attr(get_the_author_meta('US_States_Serviced', $user->ID) ); ?>" /></td>
+ <th><label for="user-registered"><?php _e('User Registered'); ?></label></th>
+ <td><input type="text" name="user_registered" id="user_registered" value="<?php echo esc_attr(get_the_author_meta('user_registered', $user->ID) ); ?>" /></td>
+ </tr>
+ </table>
+ <?php
+ }
+ 
+ function action_process_option_update($user_id)
+ {
+if(isset($_POST['member_id'])){
+update_user_meta( $user_id, 'member_id', $_POST['member_id'] );
+}
+ 
+if(isset($_POST['us_states'])){
+update_user_meta( $user_id, 'us_states', $_POST['us_states'] );
+}
+
+if(isset($_POST['user_registered'])){
+update_user_meta( $user_id, 'user_registered', $_POST['user_registered'] );
+}
+ }
+}
+/* Initialise outselves */
+add_action('plugins_loaded', create_function('','global $shw_user_meta_instance; $shw_user_meta_instance = new shw_user_meta();'));            
+?>
+
